@@ -1,0 +1,8 @@
+[gd_project]
+config_version=4
+
+[application]
+run/main_scene="res://scenes/experiment_ui.tscn"
+
+[rendering]
+quality/driver/keep_rendering_on_pause=false
