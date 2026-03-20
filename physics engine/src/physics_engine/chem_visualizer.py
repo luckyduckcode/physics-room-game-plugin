@@ -251,5 +251,27 @@ def write_splats_json(path: str, splats: List[AtomicGaussianSplat], mapping: Opt
             d['nearest_vertex'] = int(mapping[i])
         out['splats'].append(d)
     import json
-    with open(path, 'w') as f:
-        json.dump(out, f, indent=2)
+    import os
+    import tempfile
+
+    # Write to a temporary file in the same directory and atomically replace.
+    dirpath = os.path.dirname(os.path.abspath(path)) or '.'
+    fd, tmppath = tempfile.mkstemp(prefix=".splats-", dir=dirpath, text=True)
+    try:
+        with os.fdopen(fd, 'w') as f:
+            json.dump(out, f, indent=2)
+            f.flush()
+            try:
+                os.fsync(f.fileno())
+            except Exception:
+                # Not all filesystems support fsync on temp files; ignore safely.
+                pass
+        # Atomic replace
+        os.replace(tmppath, path)
+    except Exception:
+        # Clean up temp file on failure
+        try:
+            os.unlink(tmppath)
+        except Exception:
+            pass
+        raise
