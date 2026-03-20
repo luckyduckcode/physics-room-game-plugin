@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Optional
-from math import isnan
 
 @dataclass
 class DerivedProperties:

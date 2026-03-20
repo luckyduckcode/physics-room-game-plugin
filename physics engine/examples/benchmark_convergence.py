@@ -1,4 +1,5 @@
 """Convergence benchmark: sweep basis size N and compare numeric HO eigenvalues to analytic energies."""
+import csv
 import numpy as np
 from physics_engine.hamiltonian import build_H
 from physics_engine.config import EngineConfig
@@ -26,7 +27,6 @@ for N, evs, ana, err in results:
     print(' rel_err:', np.round(err, 8).tolist())
 
 # Optionally save CSV
-import csv
 with open('physics engine/examples/benchmark_convergence_results.csv', 'w', newline='') as f:
     w = csv.writer(f)
     header = ['N'] + [f'level_{i}_num' for i in range(levels)] + [f'level_{i}_analytic' for i in range(levels)] + [f'level_{i}_relerr' for i in range(levels)]

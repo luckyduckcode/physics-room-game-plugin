@@ -2,8 +2,8 @@ from __future__ import annotations
 
 """Compatibility facade for split probes/interpreters modules."""
 
-from .probes import DataAcquisition, DemoManifold, ManifoldLike, STMTool, SpectroscopyTool, ToolType
-from .interpreters import MicroscopistExpert, OllamaToolExpert, SpectroscopistExpert
+from .probes import DataAcquisition, DemoManifold, ManifoldLike, STMTool, SpectroscopyTool, ToolType  # noqa: E402
+from .interpreters import MicroscopistExpert, OllamaToolExpert, SpectroscopistExpert  # noqa: E402
 
 
 __all__ = [

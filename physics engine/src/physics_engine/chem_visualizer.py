@@ -226,7 +226,6 @@ def update_splat_coeffs_from_vertex_values(splats: List[AtomicGaussianSplat], ve
 
     This mutates the `splats` list in-place.
     """
-    verts = None
     if mapping is None:
         # try to build vertex array from caller context is not possible; raise
         raise ValueError('mapping (splat->vertex indices) must be provided')

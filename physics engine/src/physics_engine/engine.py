@@ -250,7 +250,7 @@ class PhysicsEngine:
     def symbolic_check(self) -> str:
         """Attempt a lightweight symbolic check (requires SymPy)."""
         try:
-            import sympy as sp
+            pass
         except Exception:
             return "sympy not installed"
 

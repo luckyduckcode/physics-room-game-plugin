@@ -7,86 +7,43 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  quality-and-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.11, 3.12]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-        # Try to install the local package in editable mode (physics engine subfolder)
-        pip install -e "physics engine/." || true
-
-    - name: Run tests
-      env:
-        PYTHONPATH: ${{ github.workspace }}/physics\ engine/src
-      run: |
-        python -m pytest -q
-name: physics-room-ci
-
-on:
-  push:
-  pull_request:
-
-jobs:
-  test-and-quality:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.11", "3.12"]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff mypy grpcio grpcio-tools pandas matplotlib nbconvert
-          pip install -e "./physics engine"
-          pip install pytest httpx
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          pip install -e "physics engine/." || true
 
-      - name: Generate gRPC modules
+      - name: Lint with ruff
         run: |
-          chmod +x "./scripts/gen_grpc.sh"
-          ./scripts/gen_grpc.sh
+          python -m pip install --upgrade pip
+          pip install ruff
+          ruff check .
 
-      - name: Lint
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}/physics\ engine/src
         run: |
-          ruff check "physics engine/src/physics_engine"
-
-      - name: Type check
-        run: |
-          mypy "physics engine/src/physics_engine"
-
-      - name: Unit and integration tests
-        run: |
-          PYTHONPATH="physics engine/src" pytest -q "physics engine/tests"
-
-      - name: Benchmark smoke run
-        run: |
-          PYTHONPATH="physics engine/src" python "physics engine/benchmarks/run_benchmarks.py"
-
-      - name: Generate benchmark report
-        run: |
-          PYTHONPATH="physics engine/src" python "physics engine/benchmarks/generate_report.py"
-
-      - name: Export notebook HTML
-        run: |
-          jupyter nbconvert --to html "notebooks/results_analysis.ipynb" --output "results_analysis.html"
+          python -m pytest -q

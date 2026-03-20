@@ -3,7 +3,7 @@ from __future__ import annotations
 from concurrent import futures
 import os
 import time
-from typing import Callable, Mapping, cast
+from typing import Mapping, cast
 
 import grpc
 from google.protobuf import struct_pb2

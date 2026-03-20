@@ -1,5 +1,4 @@
 from fastapi.testclient import TestClient
-import json
 
 from game_module import http_api
 

@@ -1,5 +1,4 @@
 from typing import Optional, Any
-from dataclasses import dataclass
 import threading
 import json
 import time
@@ -103,7 +102,7 @@ class PhysicsAdapter:
         except Exception:
             raise RuntimeError('gRPC bindings not generated; run physics engine/scripts/generate_protos.sh')
 
-        adapter = self
+        # no unused local assignment
 
         class _Servicer(splats_pb2_grpc.VisualizerServicer):
             def SendSplatCloud(self, request, context):
@@ -118,10 +117,26 @@ class PhysicsAdapter:
                         'color': [float(c) for c in s.color],
                     })
                 out = {'splats': splats, 'source': request.source_id}
-                # write into godot project's res:// by using project path relative copy
+                # write into godot project's res:// using atomic replace
                 path = 'godot_scene_bundle/splats_received.json'
-                with open(path, 'w') as f:
-                    json.dump(out, f)
+                try:
+                    import os
+                    import tempfile
+
+                    dirpath = os.path.dirname(os.path.abspath(path)) or '.'
+                    fd, tmppath = tempfile.mkstemp(prefix='.splats-', dir=dirpath, text=True)
+                    with os.fdopen(fd, 'w') as f:
+                        json.dump(out, f)
+                        try:
+                            f.flush()
+                            os.fsync(f.fileno())
+                        except Exception:
+                            pass
+                    os.replace(tmppath, path)
+                except Exception:
+                    # best-effort fallback
+                    with open(path, 'w') as f:
+                        json.dump(out, f)
                 return splats_pb2.Ack(ok=True, message='written')
 
         def _serve():

@@ -26,8 +26,8 @@ def test_norm_preserved():
 def test_logs_present():
     result = make_engine().simulate_with_logs(make_psi0(), np.linspace(0, 1, 20), log_every=5)
     assert len(result.logs) > 0
-    assert any("SIMULATION START"    in l for l in result.logs)
-    assert any("SIMULATION COMPLETE" in l for l in result.logs)
+    assert any("SIMULATION START"    in line for line in result.logs)
+    assert any("SIMULATION COMPLETE" in line for line in result.logs)
 
 def test_energy_finite():
     result = make_engine().simulate_with_logs(make_psi0(), np.linspace(0, 1, 20))

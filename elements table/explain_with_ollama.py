@@ -1,6 +1,5 @@
 import os
 import requests
-import json
 from typing import List
 
 def query_ollama_for_explanation(log_lines: List[str], ollama_url: str = None, model: str = None) -> str:

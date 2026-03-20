@@ -9,7 +9,6 @@ Then run the server (see grpc_splat_server.py) and run this client.
 """
 import json
 import sys
-import time
 
 try:
     from physics_engine.grpc._generated import splats_pb2, splats_pb2_grpc

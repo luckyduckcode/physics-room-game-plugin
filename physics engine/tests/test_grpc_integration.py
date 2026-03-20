@@ -7,10 +7,10 @@ import pytest
 
 grpc = pytest.importorskip("grpc")
 
-from physics_engine.grpc import physics_room_pb2 as pb2  # type: ignore[import-not-found]
-from physics_engine.grpc import physics_room_pb2_grpc as pb2_grpc  # type: ignore[import-not-found]
-from physics_engine.grpc.client import call_with_retry  # type: ignore[import-not-found]
-from physics_engine.grpc.server import ApiKeyAuthInterceptor, PhysicsRoomGrpcService  # type: ignore[import-not-found]
+from physics_engine.grpc import physics_room_pb2 as pb2  # type: ignore[import-not-found]  # noqa: E402
+from physics_engine.grpc import physics_room_pb2_grpc as pb2_grpc  # type: ignore[import-not-found]  # noqa: E402
+from physics_engine.grpc.client import call_with_retry  # type: ignore[import-not-found]  # noqa: E402
+from physics_engine.grpc.server import ApiKeyAuthInterceptor, PhysicsRoomGrpcService  # type: ignore[import-not-found]  # noqa: E402
 
 
 @pytest.fixture
