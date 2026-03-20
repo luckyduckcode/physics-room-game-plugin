@@ -110,6 +110,7 @@ def weak_field_relativistic(ops: dict, cfg: dict, t: float = 0.0) -> np.ndarray:
     corrections without depending on heavy external libraries.
     """
     p = ops["p"]
+    N = cfg.get("N", p.shape[0])
     eps = 1e-3 * float(cfg.get("hbar", 1.0))
     return -eps * (p @ p)
 

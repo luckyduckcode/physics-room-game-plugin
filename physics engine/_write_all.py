@@ -1,6 +1,5 @@
 """One-shot script to overwrite all physics_engine source files."""
-import pathlib
-import textwrap
+import pathlib, textwrap
 
 BASE = pathlib.Path('/Volumes/USB-HDD/coding projects/physics engine/src/physics_engine')
 ROOT = pathlib.Path('/Volumes/USB-HDD/coding projects/physics engine')

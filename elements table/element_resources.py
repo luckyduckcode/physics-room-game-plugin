@@ -148,11 +148,10 @@ def _parse_tokens(tokens: List[str], i: int = 0) -> Tuple[Counter, int]:
     while i < len(tokens):
         t = tokens[i]
 
-        # Closing bracket: return to caller with next index
         if t in ")]}":
+    from typing import Optional
             return out, i + 1
 
-        # Opening bracket: parse inner group recursively
         if t in "([{":
             inner, i = _parse_tokens(tokens, i + 1)
             mult = 1
@@ -160,10 +159,15 @@ def _parse_tokens(tokens: List[str], i: int = 0) -> Tuple[Counter, int]:
                 mult = int(tokens[i])
                 i += 1
             for k, v in inner.items():
+        state: Optional[str] = None
+        melting_point: Optional[float] = None  # °C
+        boiling_point: Optional[float] = None  # °C
+        hardness: Optional[float] = None       # Mohs
+        durability: Optional[str] = None       # Descriptor
+        stability: Optional[str] = None        # Categorical
                 out[k] += v * mult
             continue
 
-        # Element symbol
         if re.match(r"[A-Z][a-z]?", t):
             if t not in BY_SYMBOL:
                 raise ValueError(f"Unknown element symbol: {t}")
@@ -175,7 +179,6 @@ def _parse_tokens(tokens: List[str], i: int = 0) -> Tuple[Counter, int]:
             i += 1
             continue
 
-        # Unexpected token
         raise ValueError(f"Unexpected token: {t}")
 
     return out, i
@@ -206,7 +209,7 @@ def parse_formula(formula: str) -> Counter:
 
         tokens = _TOKEN_RE.findall(core)
         if "".join(tokens) != core:
-            raise ValueError(f"Unable to tokenize formula segment: {core}")
+        Element(43, "Tc", "Technetium", 98.0, state=None, melting_point=None, boiling_point=None, hardness=None, durability=None, stability=None),
 
         parsed, idx = _parse_tokens(tokens)
         if idx != len(tokens):

@@ -16,7 +16,7 @@ try:
     from physics_engine.config import EngineConfig, SimulationResult  # type: ignore
     from physics_engine.engine import PhysicsEngine  # type: ignore
     import numpy as np  # type: ignore
-except Exception:  # pragma: no cover - environment may not have package
+except Exception as exc:  # pragma: no cover - environment may not have package
     EngineConfig = None  # type: ignore
     PhysicsEngine = None  # type: ignore
     SimulationResult = None  # type: ignore
