@@ -334,4 +334,122 @@ class PhysicsEngine:
     @staticmethod
     def expectation(states: np.ndarray, operator: np.ndarray) -> np.ndarray:
         return np.real(np.einsum("bi,ij,bj->b", states.conj(), operator, states))
+
+    # --- Game-friendly helpers ---
+    def game_update(self, psi: np.ndarray, delta_time: float, inputs: dict | None = None) -> tuple[np.ndarray, int]:
+        """Game-friendly update: accumulate fixed steps at 60Hz (by default).
+
+        - `psi`: current state vector (shape (N,))
+        - `delta_time`: wall-clock delta to consume
+        - returns: (new_psi, steps_taken)
+
+        This helper is intentionally lightweight and does not mutate engine state.
+        """
+        if inputs is None:
+            inputs = {}
+        fixed_dt = getattr(self, "fixed_dt", None) or 1.0 / 60.0
+        accumulator = float(inputs.get("_accumulator", 0.0))
+        accumulator += float(delta_time)
+        steps = 0
+        psi = psi.astype(complex).copy()
+        # Optional deterministic RNG seed per-step
+        use_det = bool(inputs.get("use_deterministic", getattr(self.config, "use_deterministic", False)))
+        seed = inputs.get("deterministic_seed", getattr(self.config, "random_seed", None))
+
+        while accumulator >= fixed_dt:
+            if use_det and seed is not None:
+                import numpy as _np
+
+                _np.random.seed(int(seed))
+            psi = self._fixed_step(psi, fixed_dt, inputs=inputs)
+            accumulator -= fixed_dt
+            steps += 1
+            # advance seed deterministically if provided
+            if seed is not None:
+                try:
+                    seed = int(seed) + 1
+                except Exception:
+                    seed = None
+
+        # return updated psi and steps (caller may store leftover accumulator in inputs)
+        return psi, steps
+
+    def set_game_param(self, name: str, value: float) -> None:
+        """Set a game-exposed parameter by name. This modifies `self.config` or
+        registers simple effects like thermal noise.
+
+        Example keys:
+          - 'coupling_kappa' -> maps to `config.kappa`
+          - 'temperature' -> calls `add_thermal_noise`
+        """
+        key = (name or "").strip().lower()
+        if key in ("coupling_kappa", "kappa"):
+            try:
+                self.config.kappa = float(value)
+            except Exception:
+                pass
+        elif key in ("lambda", "lam"):
+            try:
+                self.config.lam = float(value)
+            except Exception:
+                pass
+        elif key == "temperature":
+            try:
+                # replace existing thermal noise with new parameters
+                self.add_thermal_noise(temperature=float(value))
+            except Exception:
+                pass
+        elif key == "friction":
+            try:
+                self.add_thermal_noise(temperature=getattr(self.config, "temperature", 0.1), friction=float(value))
+            except Exception:
+                pass
+        else:
+            # Generic fallback: try to set attribute on config if present
+            if hasattr(self.config, name):
+                try:
+                    setattr(self.config, name, float(value))
+                except Exception:
+                    pass
+
+    def _fixed_step(self, psi: np.ndarray, dt: float, inputs: dict | None = None) -> np.ndarray:
+        """Perform a single fixed-step evolution on `psi` using timestep `dt`.
+
+        This reuses the same integrator as `simulate` but for a single step.
+        """
+        if inputs is None:
+            inputs = {}
+        # Allow caller to pass a forcing callable via inputs
+        forcing = inputs.get("forcing", None)
+        t = float(inputs.get("time", 0.0))
+
+        H = self._build_H(t, forcing)
+        # unitary propagation for this small dt
+        new_psi = expm(-1j * H * dt / self.config.hbar) @ psi
+        # apply non-unitary terms (first-order) as in simulate
+        if self.non_unitary_terms or self.non_unitary_ops:
+            delta = np.zeros_like(new_psi, dtype=complex)
+            for fn in self.non_unitary_terms:
+                try:
+                    part = fn(new_psi, t)
+                    if part is not None:
+                        delta += part
+                except Exception:
+                    continue
+
+            for (C, strength) in self.non_unitary_ops:
+                try:
+                    K = C.conj().T @ C
+                    delta += -0.5 * float(strength) * (K @ new_psi)
+                except Exception:
+                    continue
+
+            new_psi = new_psi + (dt * delta)
+
+        # renormalize
+        try:
+            new_psi = new_psi / np.linalg.norm(new_psi)
+        except Exception:
+            pass
+        return new_psi
  

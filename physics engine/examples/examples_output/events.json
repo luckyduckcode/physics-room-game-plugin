@@ -1,0 +1,28 @@
+{
+  "events": [
+    {
+      "timestamp": 1774037134.073716,
+      "type": "anomaly",
+      "count": 1,
+      "intensity": 0.27657439779710624
+    },
+    {
+      "timestamp": 1774037134.5968168,
+      "type": "anomaly",
+      "count": 1,
+      "intensity": 0.5129704552295319
+    },
+    {
+      "timestamp": 1774037135.62912,
+      "type": "anomaly",
+      "count": 1,
+      "intensity": 0.7414670522347097
+    },
+    {
+      "timestamp": 1774037136.662018,
+      "type": "anomaly",
+      "count": 1,
+      "intensity": 0.7991251286200829
+    }
+  ]
+}

@@ -59,11 +59,15 @@ func _populate_multimesh():
         var d = splat_data[i]
         var pos = d.get('center', [0,0,0])
         var alpha = float(d.get('alpha', 0.1))
-        var scale = alpha * 2.0
+        # scale splat by alpha (user can tune mapping); keep minimum size
+        var scale = max(0.02, alpha * 2.0)
         var tr = Transform3D(Basis.IDENTITY.scaled(Vector3(scale, scale, scale)), Vector3(pos[0], pos[1], pos[2]))
         mm.set_instance_transform(i, tr)
         var col = d.get('color', [0.8,0.8,0.8])
-        mm.set_instance_color(i, Color(col[0], col[1], col[2], 1.0))
+        # Use `coeff` as per-splat opacity multiplier when present
+        var coeff = float(d.get('coeff', 1.0))
+        var a = clamp(coeff, 0.0, 4.0)
+        mm.set_instance_color(i, Color(col[0], col[1], col[2], a))
 
 func set_splats_from_json(path: String):
     var f = File.new()

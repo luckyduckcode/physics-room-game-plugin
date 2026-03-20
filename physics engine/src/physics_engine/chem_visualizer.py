@@ -274,3 +274,64 @@ def write_splats_json(path: str, splats: List[AtomicGaussianSplat], mapping: Opt
         except Exception:
             pass
         raise
+
+
+def get_lod_splats(splats: List[AtomicGaussianSplat], camera_pos: Sequence[float], max_splats: int = 20000) -> List[AtomicGaussianSplat]:
+    """Return a distance-capped subset of `splats` centered on `camera_pos`.
+
+    - `splats`: list of `AtomicGaussianSplat`
+    - `camera_pos`: 3-sequence world position
+    - `max_splats`: maximum number of splats to return (closest first)
+    """
+    if not splats:
+        return []
+    pts = np.array([s.center for s in splats], dtype=float)
+    cam = np.array(camera_pos, dtype=float)
+    dists = np.linalg.norm(pts - cam.reshape(1, 3), axis=1)
+    idx = np.argsort(dists)[: int(max_splats)]
+    return [splats[int(i)] for i in idx]
+
+
+def apply_game_effect(splats: List[AtomicGaussianSplat], effect_type: str, engine_time: float = 0.0, params: Optional[dict] = None) -> None:
+    """Apply a simple, in-place visual effect to `splats` for game use.
+
+    Supported effects:
+      - 'anomaly_pulse': breathes `coeff` (opacity/strength) with a sine wave.
+          params: { 'freq': float, 'amp': float, 'base': float }
+      - 'energy_color_shift': shift colors toward red based on `coeff` and
+          provided energy scale.
+          params: { 'energy': float }
+
+    The function mutates the `splats` list in-place for fast real-time updates.
+    """
+    if not splats:
+        return
+    import math
+
+    p = dict(params or {})
+    et = float(engine_time or 0.0)
+
+    if effect_type == "anomaly_pulse":
+        freq = float(p.get("freq", 10.0))
+        amp = float(p.get("amp", 0.4))
+        base = float(p.get("base", 1.0))
+        for i, s in enumerate(splats):
+            # add a small phase offset per-splat for variety
+            phase = (i % 7) * 0.53
+            pulse = base + amp * math.sin(et * freq + phase)
+            s.coeff = float(max(0.0, s.coeff * pulse))
+
+    elif effect_type == "energy_color_shift":
+        energy = float(p.get("energy", 1.0))
+        for s in splats:
+            r, g, b = s.color
+            shift = min(1.0, float(s.coeff) * energy)
+            # push toward warm (red/orange) as energy increases
+            new_r = min(1.0, r + 0.6 * shift)
+            new_g = max(0.0, g * (1.0 - 0.4 * shift))
+            new_b = max(0.0, b * (1.0 - 0.6 * shift))
+            s.color = (new_r, new_g, new_b)
+
+    else:
+        # unknown effect: no-op
+        return
