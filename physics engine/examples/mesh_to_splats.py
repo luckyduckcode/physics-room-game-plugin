@@ -30,7 +30,7 @@ def main():
 
     try:
         import trimesh
-    except Exception:
+    except Exception as e:
         print('Please install trimesh (pip install "trimesh[runtime]")')
         raise
 
@@ -41,9 +41,10 @@ def main():
     # sample points on the surface
     pts, face_idx = trimesh.sample.sample_surface(mesh, args.count)
 
-    # approximate normals (optional) -- not used directly now
+    # approximate normals (optional)
+    normals = None
     try:
-        _ = mesh.vertex_normals
+        normals = mesh.vertex_normals
     except Exception:
         pass
 
@@ -74,6 +75,8 @@ def main():
             for fi, verts in enumerate(f_idx):
                 vn = vnorms[verts]
                 # curvature proxy: mean pairwise angular deviation of vertex normals
+                dot = np.clip(np.einsum('ij,ij->i', vn, vn), -1.0, 1.0)
+                ang = np.arccos(np.clip(np.sum(vn, axis=0) / (np.linalg.norm(np.sum(vn, axis=0)) + 1e-12), -1.0, 1.0))
                 # fallback: use norm of normal differences
                 diffs = vn - vn.mean(axis=0)
                 face_curv[fi] = np.linalg.norm(diffs)

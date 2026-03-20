@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from physics_engine.operators import (
     ladder_ops, mat_power, position_op,
     momentum_op, number_op, commutator, check_hermitian,

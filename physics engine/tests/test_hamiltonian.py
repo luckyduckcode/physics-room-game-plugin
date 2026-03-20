@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from physics_engine.hamiltonian import build_H
 from physics_engine.operators   import check_hermitian
 

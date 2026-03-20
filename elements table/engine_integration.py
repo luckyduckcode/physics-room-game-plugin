@@ -1,4 +1,5 @@
 from core_models import Universe
+from element_resources import Element
 from physics_engine.src.physics_engine.engine import PhysicsEngine
 from physics_engine.src.physics_engine.config import EngineConfig
 from map_element_to_physics import map_element_to_physics_params
