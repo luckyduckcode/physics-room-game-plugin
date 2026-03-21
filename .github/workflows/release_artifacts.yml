@@ -1,0 +1,38 @@
+name: Release Artifacts
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Make packaging scripts executable
+        run: |
+          chmod +x ./tools/package_godot_addon.sh || true
+          chmod +x ./unity_plugin/package_unity_zip.sh || true
+
+      - name: Run Godot packaging
+        run: |
+          ./tools/package_godot_addon.sh
+
+      - name: Run Unity packaging
+        run: |
+          ./unity_plugin/package_unity_zip.sh
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: physics-room-plugins
+          path: |
+            release/physics_room_splats-godot.zip
+            release/unity_plugin-0.1.0.zip
