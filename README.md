@@ -49,3 +49,22 @@ From [physics engine](physics%20engine):
 - See the harmonic oscillator benchmark summary: [physics engine/notebooks/BENCHMARK_RESULTS.md](physics%20engine/notebooks/BENCHMARK_RESULTS.md)
 - Notebook with runnable cell: [physics engine/notebooks/benchmark_results.ipynb](physics%20engine/notebooks/benchmark_results.ipynb)
 
+
+## Godot Add-on (Quick Install)
+
+Install the packaged Godot add-on to a Godot project:
+
+1. Download `physics_room_splats-godot.zip` from the release assets (see the Releases page).
+2. In your Godot project directory, create `addons/` if it doesn't exist and unzip the package there:
+
+```bash
+mkdir -p /path/to/your-godot-project/addons
+unzip physics_room_splats-godot.zip -d /path/to/your-godot-project/addons/
+```
+
+3. Open the project in Godot, go to `Project -> Project Settings -> Plugins`, and enable `Physics Room Splats`.
+
+4. Open the example scene `res://addons/physics_room_splats/example_splat_scene.tscn` or add a `RuntimeSplatLoader` node and point it at a `.ply` splat file to load.
+
+Notes: the add-on includes `runtime_loader.gd` (MultiMesh loader with LOD/chunking) and `shaders/gaussian_splat.shader` for simple GPU splatting.
+
