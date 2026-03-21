@@ -32,6 +32,10 @@ jobs:
         run: |
           ./unity_plugin/package_unity_zip.sh
 
+      - name: Run demo packaging
+        run: |
+          ./tools/package_demo_godot.sh
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -59,6 +63,16 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: release/unity_plugin-0.1.0.zip
           asset_name: unity_plugin-0.1.0.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload demo zip to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release/demo-godot.zip
+          asset_name: demo-godot.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
