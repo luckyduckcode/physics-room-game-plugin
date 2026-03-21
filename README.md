@@ -50,21 +50,33 @@ From [physics engine](physics%20engine):
 - Notebook with runnable cell: [physics engine/notebooks/benchmark_results.ipynb](physics%20engine/notebooks/benchmark_results.ipynb)
 
 
-## Godot Add-on (Quick Install)
 
-Install the packaged Godot add-on to a Godot project:
+## Game Plugin Integration (Godot, Unity, Unreal)
 
-1. Download `physics_room_splats-godot.zip` from the release assets (see the Releases page).
-2. In your Godot project directory, create `addons/` if it doesn't exist and unzip the package there:
+Physics Room now supports direct export and visualization of Gaussian "splats" in popular game engines:
 
-```bash
-mkdir -p /path/to/your-godot-project/addons
-unzip physics_room_splats-godot.zip -d /path/to/your-godot-project/addons/
-```
+- **Godot**: Add-on for loading and rendering splat point clouds. Includes runtime loader, example scene, and shader scaffold.
+- **Unity**: Minimal loader stub for importing PLY splats into a ParticleSystem.
+- **Unreal**: Plugin scaffold for teams to implement a native or Blueprint-based PLY loader.
 
-3. Open the project in Godot, go to `Project -> Project Settings -> Plugins`, and enable `Physics Room Splats`.
+### Quickstart
 
-4. Open the example scene `res://addons/physics_room_splats/example_splat_scene.tscn` or add a `RuntimeSplatLoader` node and point it at a `.ply` splat file to load.
+See [GAME_PLUGIN_QUICKSTART.md](GAME_PLUGIN_QUICKSTART.md) for step-by-step instructions to export splats and use the Godot add-on. Example:
 
-Notes: the add-on includes `runtime_loader.gd` (MultiMesh loader with LOD/chunking) and `shaders/gaussian_splat.shader` for simple GPU splatting.
+1. Export splats from the physics engine (see exporter example in `physics engine/examples/export_splats_example.py`).
+2. For Godot, download `physics_room_splats-godot.zip` from the release assets and unzip to your project's `addons/` folder.
+3. Enable the plugin in Godot and open the example scene or add the loader to your own scene.
+4. For Unity/Unreal, see the respective plugin folders for usage and extension notes.
+
+Release assets include:
+- `physics_room_splats-godot.zip` (Godot add-on)
+- `unity_plugin-0.1.0.zip` (Unity stub)
+- `demo-godot.zip` (Godot demo project)
+
+For more, see:
+- [GAME_PLUGIN_QUICKSTART.md](GAME_PLUGIN_QUICKSTART.md)
+- [CHANGELOG.md](CHANGELOG.md)
+- [RELEASE_DRAFT.md](RELEASE_DRAFT.md)
+
+---
 
