@@ -16,8 +16,8 @@ with open(csv_path, newline='') as f:
         N = int(row[0])
         Ns.append(N)
         # parse numeric, analytic, relerr
-        row_len = len(row)
-        half = (row_len - 1) // 3
+        l = len(row)
+        half = (l - 1) // 3
         num = list(map(float, row[1:1+half]))
         ana = list(map(float, row[1+half:1+2*half]))
         err = list(map(float, row[1+2*half:1+3*half]))

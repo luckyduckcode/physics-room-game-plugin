@@ -1,40 +1,39 @@
-# Release v0.2.0 Draft
+# Release v0.1.0 — Game plugin milestone (Draft)
 
-Branch: `release/v0.2.0`
+Branch: `main`
 
 ## PR Title
 
-chore(release): v0.2.0
+feat(release): v0.1.0 — game-plugin milestone
 
 ## PR Body
 
-This release collects the following changes:
+This release collects the initial game-plugin work enabling export and
+visualization of Gaussian "splats" in game engines. Changes included in
+this milestone:
 
-- Pluggable Hamiltonian registry and runtime APIs for adding extra Hamiltonian terms.
-- Optional QuTiP backend support and SymPy symbolic-check hooks.
-- Open-system helpers: thermal noise, Lindblad-like damping, and collapse operator plumbing.
-- `chem_visualizer` utilities: `AtomicGaussianSplat`, STO-3G effective-alpha proxy, mesh-to-splats sampler, KDTree vertex mapping, and helpers to update splat coefficients.
-- gRPC proto for SplatCloud messages and example client/server/streaming scripts.
-- Godot MultiMesh splat renderer and auto-reload script for live visualization.
-- Benchmarks and example scripts demonstrating harmonic convergence and splat export/streaming.
-- CI improvements: `ruff` lint step and pip caching; various lint fixes across the repo.
+- `physics engine/src/physics_engine/exporter.py` — `SplatExporter.save_ply()` to write ASCII PLY point clouds.
+- `physics engine/examples/export_splats_example.py` — example that emits JSON + PLY (`physics engine/examples/out/`).
+- Godot add-on scaffold: `godot_scene_bundle/addons/physics_room_splats/` (`plugin.cfg`, editor helper, runtime loader).
+- Godot runtime loader: `godot_scene_bundle/addons/physics_room_splats/runtime_loader.gd` and example scene `godot_scene_bundle/scenes/example_splat_scene.tscn`.
+- Unity UPM stub: `unity_plugin/package.json`, `unity_plugin/Runtime/SplatLoader.cs` to load PLY into a ParticleSystem.
 
-See `CHANGELOG.md` for details.
+See `GAME_PLUGIN_QUICKSTART.md` for run steps and notes.
 
 ## Release Notes (summary)
 
-See `CHANGELOG.md` for the full set of notes. Key highlights:
-- Modular Hamiltonian and open-system features for the physics engine.
-- Visualization pipeline: splat generator, gRPC proto, Godot renderer and file-watcher.
-- Linting fixes and CI improvements to keep the tree healthy.
+Initial game-plugin milestone:
+- Export splats from the physics engine to PLY/JSON
+- Minimal Godot add-on + runtime loader for quick visualization
+- Unity stub to demonstrate cross-engine import pattern
 
 ## Post-merge steps
 
-1. Create a Git tag `v0.2.0` and push it:
+1. Create a Git tag `v0.1.0` and push it:
 
 ```bash
-git tag -a v0.2.0 -m "v0.2.0"
-git push origin v0.2.0
+git tag -a v0.1.0 -m "v0.1.0: game-plugin milestone — Godot add-on, exporter, examples"
+git push origin v0.1.0
 ```
 
-2. Create a GitHub release (draft) and attach `CHANGELOG.md` as release notes.
+2. Publish a GitHub release (draft) using the content above (attach `GAME_PLUGIN_QUICKSTART.md`/`CHANGELOG.md` as desired).

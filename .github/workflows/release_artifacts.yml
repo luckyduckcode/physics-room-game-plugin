@@ -1,0 +1,83 @@
+name: Release Artifacts
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Make packaging scripts executable
+        run: |
+          chmod +x ./tools/package_godot_addon.sh || true
+          chmod +x ./unity_plugin/package_unity_zip.sh || true
+          chmod +x ./tools/package_demo_godot.sh || true
+
+      - name: Install zip
+        run: |
+          sudo apt-get update && sudo apt-get install -y zip
+
+      - name: Run Godot packaging
+        run: |
+          ./tools/package_godot_addon.sh
+
+      - name: Run Unity packaging
+        run: |
+          ./unity_plugin/package_unity_zip.sh
+
+      - name: Run demo packaging
+        run: |
+          ./tools/package_demo_godot.sh
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Godot add-on to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release/physics_room_splats-godot.zip
+          asset_name: physics_room_splats-godot.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Unity package to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release/unity_plugin-0.1.0.zip
+          asset_name: unity_plugin-0.1.0.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload demo zip to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release/demo-godot.zip
+          asset_name: demo-godot.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,16 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.0",
+  "FriendlyName": "Physics Room Splats",
+  "Description": "Stub Unreal plugin: demonstrates where to place a PLY splat loader for runtime import.",
+  "Category": "Rendering",
+  "CreatedBy": "luckyduckcode",
+  "Modules": [
+    {
+      "Name": "SplatPlugin",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
+}

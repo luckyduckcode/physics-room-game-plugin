@@ -1,0 +1,9 @@
+{
+  "name": "com.luckyduckcode.physics-room-splats",
+  "displayName": "Physics Room Splats (Unity)",
+  "version": "0.1.0",
+  "unity": "2021.1",
+  "description": "Stub UPM package: simple loader to import ASCII PLY splat point clouds into Unity via a ParticleSystem.",
+  "keywords": ["physics", "splats", "ply", "visualization"],
+  "author": { "name": "luckyduckcode" }
+}

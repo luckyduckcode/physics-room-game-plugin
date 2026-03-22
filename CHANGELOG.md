@@ -2,6 +2,20 @@
 
 All notable changes to this repository will be documented in this file.
 
+## [0.1.2] - 2026-03-21
+### Added
+- Packaged Godot demo scene (`demo-godot.zip`) and smaller Godot/Unity plugin zips uploaded to release v0.1.2.
+
+### Notes
+- Release assets include `physics_room_splats-godot.zip`, `unity_plugin-0.1.0.zip`, and `demo-godot.zip`.
+
+## [0.1.0] - 2026-03-21
+### Added
+- Initial game-plugin milestone: PLY `SplatExporter`, Godot add-on (editor + runtime loader), example exporter script, Godot shader scaffold, Unity and Unreal stubs, deterministic `GameLoop` helper, and gRPC Visualizer server.
+
+### Notes
+- Tagged and published releases: `v0.1.0` and `v0.1.2` (packaged artifacts).
+
 ## [0.2.0] - 2026-03-20
 ### Added
 - Pluggable Hamiltonian registry and runtime APIs for adding extra Hamiltonian terms.
